@@ -47,3 +47,7 @@ func TestExtractLines(t *testing.T) {
 		}
 	}
 }
+
+func TestExtractIngredients(t *testing.T) {
+	//(-.[^-]+)
+}

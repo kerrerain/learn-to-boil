@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
 	"net/http"
 	"regexp"
 	"strings"
@@ -10,19 +11,34 @@ import (
 
 func main() {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://www.marmiton.org/recettes/recette_tiramisu-au-carambar_56502.aspx", nil)
+	req, err := http.NewRequest("GET", "http://www.marmiton.org/recettes/recette_roule-au-saumon-et-aux-epinards_30443.aspx", nil)
 
 	check(err)
 
+	// Read http://blog.mischel.com/2011/12/20/writing-a-web-crawler-politeness/
 	req.Header.Set("User-Agent", "https://github.com/magleff/learn-to-boil")
-	res, err2 := client.Do(req)
+	res, err := client.Do(req)
 
-	check(err2)
+	check(err)
 
 	defer res.Body.Close()
-	bytes, _ := ioutil.ReadAll(res.Body)
 
-	fmt.Println("HTML:\n\n", string(bytes))
+	root, err := html.Parse(res.Body)
+
+	check(err)
+
+	// Search for the title
+	ingredients, ok := scrape.Find(root, scrape.ByClass("m_content_recette_ingredients"))
+	if ok {
+		// Print the title
+		fmt.Println(scrape.TextJoin(ingredients, func(chunks []string) string {
+			for _, chunk := range chunks {
+				fmt.Println(chunk)
+			}
+			return strings.Join(chunks, " ")
+		}))
+	}
+
 }
 
 func check(e error) {
@@ -47,4 +63,8 @@ func ExtractLines(input string) []string {
 	}
 
 	return lines
+}
+
+func ExtractIngredients(input string) []string {
+	return []string{}
 }
