@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/magleff/learn-to-boil",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v75",
+	"GodepVersion": "v74",
 	"Deps": [
 		{
 			"ImportPath": "github.com/yhat/scrape",

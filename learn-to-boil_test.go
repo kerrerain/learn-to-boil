@@ -12,26 +12,24 @@ func TestExtractLines(t *testing.T) {
 		ExpectedOutput []string
 	}{
 		{
-			"case1.html",
+			"case1.txt",
 			[]string{
-				"450 g de beurre",
-				"3 citrons (ou 3 oranges)",
-				"90 g de beurre doux",
-				"3 oeufs",
-				"100 g de sucre",
-				"zestes de citron (ou d' orange)", // FIXME @magleff Try to remove the whitespace
+				"1  pâte feuilletée",
+				"1/2 chèvre en buche",
+				"3 cuillères à soupe de pesto",
+				"4  oeufs",
+				"20 cl de crème fraîche",
+				"75 g de  gruyère  rapé",
 			},
 		},
 		{
-			"case2.html",
+			"case2.txt",
 			[]string{
-				"1,2 kg de gras double",
-				"3 carottes",
-				"2 beaux oignons",
-				"100 g beurre persillé",
-				"1 petit bocal de sauce tomate cuisinée",
-				"3/4 d'une bouteille de vin blanc sec",
-				"thym, laurier",
+				"600 g d' épinards  hachés (peuvent être  surgelés )",
+				"3  oeufs",
+				"1 petite faisselle de  fromage  blanc",
+				"1 boursin (ou autre fromage  ail  et fines herbes)",
+				"4 belles tranches de  saumon fumé",
 			},
 		},
 	}
@@ -46,8 +44,4 @@ func TestExtractLines(t *testing.T) {
 			t.Errorf("Expected %v but was %v", testCase.ExpectedOutput, lines)
 		}
 	}
-}
-
-func TestExtractIngredients(t *testing.T) {
-	//(-.[^-]+)
 }

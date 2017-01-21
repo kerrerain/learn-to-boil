@@ -27,16 +27,10 @@ func main() {
 
 	check(err)
 
-	// Search for the title
 	ingredients, ok := scrape.Find(root, scrape.ByClass("m_content_recette_ingredients"))
 	if ok {
-		// Print the title
-		fmt.Println(scrape.TextJoin(ingredients, func(chunks []string) string {
-			for _, chunk := range chunks {
-				fmt.Println(chunk)
-			}
-			return strings.Join(chunks, " ")
-		}))
+		lines := ExtractLines(scrape.Text(ingredients))
+		fmt.Println(lines)
 	}
 
 }
@@ -48,23 +42,13 @@ func check(e error) {
 }
 
 func ExtractLines(input string) []string {
-	r, _ := regexp.Compile(`<[^>]*>`)
-	str := r.ReplaceAllString(input, "")
-
-	extract, _ := regexp.Compile(`(-.+\n?[\s]+[^-]+)`)
-	lines := extract.FindAllString(str, -1)
-
-	eraseWhitespaces, _ := regexp.Compile(`\s{2,}`)
+	r, _ := regexp.Compile(`(-.[^-]+)`)
+	lines := r.FindAllString(input, -1)
 
 	for index, _ := range lines {
-		lines[index] = eraseWhitespaces.ReplaceAllString(lines[index], " ")
 		lines[index] = strings.Replace(lines[index], "- ", "", -1)
 		lines[index] = strings.TrimSpace(lines[index])
 	}
 
 	return lines
-}
-
-func ExtractIngredients(input string) []string {
-	return []string{}
 }
