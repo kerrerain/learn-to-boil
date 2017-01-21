@@ -1,38 +1,60 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"github.com/yhat/scrape"
 	"golang.org/x/net/html"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
 )
 
-func main() {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://www.marmiton.org/recettes/recette_roule-au-saumon-et-aux-epinards_30443.aspx", nil)
+func request(url string) (*http.Response, error) {
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return errors.New("net/http: use last response")
+		},
+	}
+	req, err := http.NewRequest("GET", url, nil)
 
 	check(err)
 
-	// Read http://blog.mischel.com/2011/12/20/writing-a-web-crawler-politeness/
 	req.Header.Set("User-Agent", "https://github.com/magleff/learn-to-boil")
-	res, err := client.Do(req)
+
+	return client.Do(req)
+}
+
+func randomLocation() (string, error) {
+	response, err := request("http://www.marmiton.org/recettes/recette-hasard.aspx")
+
+	if err != nil {
+		location, _ := response.Location()
+		return location.String(), nil
+	} else {
+		return "", errors.New("Random location not found.")
+	}
+}
+
+func main() {
+	location, err := randomLocation()
 
 	check(err)
 
-	defer res.Body.Close()
+	log.Println("Analyzing random recipe:", location)
 
-	root, err := html.Parse(res.Body)
+	response, _ := request(location)
+	root, err := html.Parse(response.Body)
 
 	check(err)
 
 	ingredients, ok := scrape.Find(root, scrape.ByClass("m_content_recette_ingredients"))
 	if ok {
 		lines := ExtractLines(scrape.Text(ingredients))
-		fmt.Println(lines)
+		log.Println("Extracting ingredients", lines)
 	}
 
+	defer response.Body.Close()
 }
 
 func check(e error) {
