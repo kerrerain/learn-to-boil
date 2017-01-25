@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"io/ioutil"
@@ -35,7 +35,7 @@ func TestExtractLines(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		dat, err := ioutil.ReadFile("./test_files/" + testCase.FilePath)
+		dat, err := ioutil.ReadFile("../test_files/" + testCase.FilePath)
 		check(err)
 
 		lines := ExtractLines(string(dat))
